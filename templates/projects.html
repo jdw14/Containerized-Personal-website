@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Projects - John Wrightsman</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <link href="{{ url_for('static', filename='css/styles.css') }}" rel="stylesheet">
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar navbar-expand-lg navbar-dark bg-primary fixed-top">
+        <div class="container">
+            <a class="navbar-brand fw-bold" href="{{ url_for('index') }}">John Wrightsman</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ url_for('index') }}">Home</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ url_for('about') }}">About Me</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ url_for('resume') }}">Resume</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link active" href="{{ url_for('projects') }}">Projects</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ url_for('contact') }}">Contact</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Projects Section -->
+    <section class="py-5 mt-5">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-10 mx-auto">
+                    <h1 class="text-center mb-5">My Projects</h1>
+                    <p class="lead text-center text-muted mb-5">
+                        Here are some of the projects I've worked on that showcase my skills in data science and full-stack development.
+                    </p>
+
+                    <!-- Projects table from DB -->
+                    {% if projects %}
+                    <div class="table-responsive">
+                        <table class="table table-bordered align-middle">
+                            <thead class="table-light">
+                                <tr>
+                                    <th style="width:150px">Image</th>
+                                    <th>Title</th>
+                                    <th>Description</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for p in projects %}
+                                <tr>
+                                    <td>
+                                        {% if p.imagefile %}
+                                            <img src="{{ url_for('static', filename='images/' ~ p.imagefile) }}" alt="{{ p.title }}" class="img-fluid" style="max-height:120px;"/>
+                                        {% else %}
+                                            <span class="text-muted">No image</span>
+                                        {% endif %}
+                                    </td>
+                                    <td>{{ p.title }}</td>
+                                    <td>{{ p.description }}</td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                    {% else %}
+                        <p class="text-center text-muted">No projects found. Add one via the contact form.</p>
+                    {% endif %}
+
+                    <!-- Flash Messages for project add -->
+                    {% with messages = get_flashed_messages(with_categories=true) %}
+                        {% if messages %}
+                            {% for category, message in messages %}
+                                <div class="alert alert-{{ 'danger' if category == 'error' else 'success' }} alert-dismissible fade show mt-4" role="alert">
+                                    {{ message }}
+                                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                                </div>
+                            {% endfor %}
+                        {% endif %}
+                    {% endwith %}
+
+                    <!-- Inline Add Project Form -->
+                    <div class="card shadow mt-4">
+                        <div class="card-body p-4">
+                            <h4 class="card-title mb-3">Add a Project</h4>
+                            <form id="projectsAddForm" action="{{ url_for('add_project_route') }}" method="post">
+                                <div class="row">
+                                    <div class="col-md-4 mb-3">
+                                        <input type="text" class="form-control" name="projectTitle" placeholder="Project title" required>
+                                    </div>
+                                    <div class="col-md-5 mb-3">
+                                        <input type="text" class="form-control" name="projectImageFile" placeholder="Image filename (example.jpg)">
+                                    </div>
+                                    <div class="col-md-3 mb-3 text-end">
+                                        <button class="btn btn-success" type="submit"><i class="fas fa-plus me-2"></i>Add</button>
+                                    </div>
+                                </div>
+                                <div class="mb-3">
+                                    <textarea class="form-control" name="projectDescription" rows="3" placeholder="Short description" required></textarea>
+                                </div>
+                            </form>
+                            <p class="text-muted small mt-2">Tip: Place the image file in <code>static/images/</code> after adding.</p>
+                        </div>
+                    </div>
+
+
+                    <!-- Call to Action -->
+                    <div class="text-center mt-5">
+                        <h3>Interested in working together?</h3>
+                        <p class="mb-4">I'm always excited to take on new projects and challenges.</p>
+                        <a href="{{ url_for('contact') }}" class="btn btn-primary btn-lg">Let's Collaborate</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="bg-dark text-white py-4">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-6">
+                    <p>&copy; 2024 John Wrightsman. All rights reserved.</p>
+                </div>
+                <div class="col-md-6 text-md-end">
+                    <a href="mailto:Johnwrightsman28@gmail.com" class="text-white me-3"><i class="fas fa-envelope"></i></a>
+                    <a href="https://www.linkedin.com/in/johndavidwrightsman/" class="text-white me-3"><i class="fab fa-linkedin"></i></a>
+                    <a href="https://github.com/jdw14/John-Wrightsman-Portfolio" class="text-white"><i class="fab fa-github"></i></a>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
